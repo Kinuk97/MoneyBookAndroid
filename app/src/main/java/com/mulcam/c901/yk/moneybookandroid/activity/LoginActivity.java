@@ -29,7 +29,6 @@ public class LoginActivity extends Activity {
     private Button cancelBtn;
     private LoginService service;
 
-    private String test;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
