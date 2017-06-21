@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MoneyBookAndroid</string>
+    <string name="test_String">기본 값</string>
 </resources>
