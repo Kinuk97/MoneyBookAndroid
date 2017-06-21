@@ -30,7 +30,6 @@ public class LoginActivity extends Activity {
     private TextView cancelBtn;
     private LoginService service;
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
