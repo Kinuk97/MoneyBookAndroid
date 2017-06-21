@@ -36,6 +36,8 @@ public class SettingActivity extends PreferenceActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.setting_pref);
+        // 이거는 나중에 해봐야할 듯
+        // setContentView(R.layout.testtest);
     }
 
     @Override
@@ -43,7 +45,7 @@ public class SettingActivity extends PreferenceActivity {
 
         String key = preference.getKey();
 
-        if(key != null) {
+        if (key != null) {
             if (key.equals("set_time")) {
                 // 시간 설정 다이얼로그 생성
                 new TimePickerDialog(SettingActivity.this, timeSetListener, hour, minute, false).show();
