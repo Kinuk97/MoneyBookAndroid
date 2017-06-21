@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mulcam.c901.yk.moneybookandroid.R;
@@ -25,8 +26,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class LoginActivity extends Activity {
     private EditText userID;
     private EditText userPW;
-    private Button okBtn;
-    private Button cancelBtn;
+    private TextView okBtn;
+    private TextView cancelBtn;
     private LoginService service;
 
 
@@ -37,8 +38,8 @@ public class LoginActivity extends Activity {
 
         userID = (EditText) findViewById(R.id.login_id_edt);
         userPW = (EditText) findViewById(R.id.login_pw_edt);
-        okBtn = (Button) findViewById(R.id.login_ok_btn);
-        cancelBtn = (Button) findViewById(R.id.login_cancle_btn);
+        okBtn = (TextView) findViewById(R.id.login_ok_btn);
+        cancelBtn = (TextView) findViewById(R.id.login_cancle_btn);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://192.168.56.1:8080/MoneyBookProject/android/")
