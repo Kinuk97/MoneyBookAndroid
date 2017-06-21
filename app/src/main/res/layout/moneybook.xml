@@ -1,7 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="수입" />
+
+            <TextView
+                android:id="@+id/mb_income_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="지출" />
+
+            <TextView
+                android:id="@+id/mb_expense_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -12,23 +53,27 @@
             android:id="@+id/mb_month_previous_btn"
             android:layout_width="46dp"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:layout_alignParentLeft="true"/>
+            android:layout_alignParentLeft="true"
+            android:background="@drawable/left_arrow"
+            android:gravity="center_horizontal" />
+
         <TextView
             android:id="@+id/mb_month_text"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center_horizontal"
             android:text="MonthView"
             android:textSize="24dp"
-            android:textStyle="bold"
-            android:gravity="center_horizontal"
-            android:layout_centerInParent="true"/>
+            android:textStyle="bold" />
+
         <Button
             android:id="@+id/mb_month_next_btn"
             android:layout_width="46dp"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true"
+            android:background="@drawable/right_arrow"
+            android:gravity="center_horizontal" />
 
     </RelativeLayout>
 
@@ -36,11 +81,10 @@
         android:id="@+id/mb_monthView"
         android:layout_width="match_parent"
         android:layout_height="400dp"
+        android:background="#FFBBBBBB"
+        android:horizontalSpacing="1dp"
         android:numColumns="7"
         android:stretchMode="columnWidth"
-        android:horizontalSpacing="1dp"
-        android:verticalSpacing="1dp"
-        android:background="#FFBBBBBB">
-    </GridView>
+        android:verticalSpacing="1dp"></GridView>
 
 </LinearLayout>

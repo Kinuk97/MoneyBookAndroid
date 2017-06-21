@@ -46,7 +46,7 @@ public class testMoneyBook extends Activity {
         dp.init(2017, 5, 14, new DatePicker.OnDateChangedListener() {
             @Override
             public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                Call<HashMap<String, Object>> call = service.moneybookList();
+                Call<HashMap<String, Object>> call = service.moneybookList(1);
                 call.enqueue(new Callback<HashMap<String, Object>>() {
                     @Override
                     public void onResponse(Call<HashMap<String, Object>> call, Response<HashMap<String, Object>> response) {

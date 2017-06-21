@@ -16,5 +16,5 @@ import retrofit2.http.Query;
 
 public interface MoneybookService {
     @GET("moneybookList.do")
-    Call<HashMap<String, Object>> moneybookList();
+    Call<HashMap<String, Object>> moneybookList(@Query("id_index")int id_index);
 }
