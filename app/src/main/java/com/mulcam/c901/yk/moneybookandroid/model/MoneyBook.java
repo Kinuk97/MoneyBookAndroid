@@ -8,7 +8,7 @@ public class MoneyBook {
 	private String category;
 	private String detail;
 	private int price;
-	private Date date;
+	private String m_date;
 	
 	public int getMoneyBookNo() {
 		return moneyBookNo;
@@ -50,18 +50,18 @@ public class MoneyBook {
 		this.price = price;
 	}
 
-	public Date getDate() {
-		return date;
+	public String getM_date() {
+		return m_date;
 	}
 
-	public void setDate(Date date) {
-		this.date = date;
+	public void setM_date(String m_date) {
+		this.m_date = m_date;
 	}
 
 	@Override
 	public String toString() {
 		return "[moneyBookNo=" + moneyBookNo + ", id_index=" + id_index + ", category=" + category
-				+ ", detail=" + detail + ", price=" + price + ", date=" + date + "]";
+				+ ", detail=" + detail + ", price=" + price + ", date=" + m_date + "]";
 	}
 	
 
