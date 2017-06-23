@@ -41,7 +41,7 @@ public class LoginActivity extends Activity {
         cancelBtn = (TextView) findViewById(R.id.login_cancle_btn);
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.56.1:8080/MoneyBookProject/android/")
+                .baseUrl("http://192.168.87.2:8080/MoneyBookProject/android/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         service = retrofit.create(LoginService.class);
