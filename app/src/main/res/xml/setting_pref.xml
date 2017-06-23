@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <Preference
+        android:key="set_time"
+        android:summary="시간을 설정합니다."
+        android:title="알림 설정" />
+
+    <Preference
+        android:key="reset"
+        android:summary="어플을 초기화합니다."
+        android:title="초기화하기" />
+
+    <Preference
+        android:summary="어플 개발 정보를 확인합니다"
+        android:title="어플 정보">
+        <!--개발화면 보여줄 액티비티-->
+        <!--<intent-->
+        <!--android:targetClass="com.mulcam.c901.yk.moneybookandroid.activity.AppDevelActivity"-->
+        <!--android:targetPackage="com.mulcam.c901.yk.moneybookandroid" />-->
+    </Preference>
+
+
+</PreferenceScreen>

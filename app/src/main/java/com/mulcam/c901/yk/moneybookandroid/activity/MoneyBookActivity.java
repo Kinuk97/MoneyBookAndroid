@@ -1,6 +1,5 @@
 package com.mulcam.c901.yk.moneybookandroid.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -10,7 +9,6 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.mulcam.c901.yk.moneybookandroid.R;
 import com.mulcam.c901.yk.moneybookandroid.calendar.MonthAdapter;
@@ -94,7 +92,7 @@ public class MoneyBookActivity extends AppCompatActivity {
                 MonthItem curItem = (MonthItem) monthViewAdapter.getItem(position);
                 int day = curItem.getDay();
 
-                Log.d("TabActivity", "Selected : " + day);
+                Log.d("MainActivity", "Selected : " + day);
             }
         });
 
@@ -121,15 +119,6 @@ public class MoneyBookActivity extends AppCompatActivity {
                 monthViewAdapter.notifyDataSetChanged();
 
                 setMonthText();
-            }
-        });
-
-        //사용내역 등록 탭 부르는 이벤트
-        Button tab_btn = (Button) findViewById(R.id.tab_btn);
-        tab_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(MoneyBookActivity.this, TabDialogActivity.class));
             }
         });
 
