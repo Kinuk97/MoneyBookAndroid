@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/day_list_category_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/left_arrow"
+            android:layout_alignParentLeft="true"/>
+        <TextView
+            android:id="@+id/day_list_category_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/day_list_category_image"
+            android:text="CATEGORY"
+            android:textSize="20dp"/>
+
+        <TextView
+            android:id="@+id/day_list_detail_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/day_list_category_tv"
+            android:text="DETAIL"
+            android:textSize="20dp"/>
+
+        <TextView
+            android:id="@+id/day_list_price_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="PRICE"
+            android:textSize="20dp"/>
+
+    </RelativeLayout>
+
+
+</LinearLayout>

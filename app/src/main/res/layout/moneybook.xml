@@ -89,4 +89,11 @@
         android:stretchMode="columnWidth"
         android:verticalSpacing="1dp"></GridView>
 
+    <ListView
+        android:id="@+id/mb_day_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbarAlwaysDrawVerticalTrack="true">
+    </ListView>
+
 </LinearLayout>

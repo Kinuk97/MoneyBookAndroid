@@ -205,4 +205,27 @@ public class MoneyBookActivity extends AppCompatActivity {
         }
     }
 
+    class ClickDayAsync extends AsyncTask<Void, Void, Void> {
+        private int selected;
+        private int id_index;
+        private MoneybookDBManager dbManager;
+
+        public ClickDayAsync(int selected, int id_index, MoneybookDBManager dbManager) {
+            this.selected = selected;
+            this.id_index = id_index;
+            this.dbManager = dbManager;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+//            List<MoneyBook>
+            return null;
+        }
+    }
+
 }
