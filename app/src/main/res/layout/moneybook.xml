@@ -75,7 +75,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:background="@drawable/right_arrow"
-            android:gravity="center_horizontal" />
+            android:gravity="center_horizontal"
+            android:onClick="mOnPopupClick"
+            />
 
     </RelativeLayout>
 
@@ -95,5 +97,13 @@
         android:layout_height="wrap_content"
         android:scrollbarAlwaysDrawVerticalTrack="true">
     </ListView>
+
+    <Button
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/plus_btn"
+            android:layout_gravity="right"
+            android:id="@+id/tab_btn"
+            />
 
 </LinearLayout>

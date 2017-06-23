@@ -323,6 +323,7 @@ public class MonthAdapter extends BaseAdapter {
 					cal.set(curYear, curMonth, dayNumber);
 					Date date = cal.getTime();
 					List<MoneyBook> mbList = dbManager.selectDayList(idIndex, date);
+
 					for (MoneyBook mb : mbList) {
 						if (mb.getCategory().equals("income")) {
 							income += mb.getPrice();
