@@ -84,12 +84,14 @@
     <GridView
         android:id="@+id/mb_monthView"
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="wrap_content"
         android:background="#FFBBBBBB"
         android:horizontalSpacing="1dp"
         android:numColumns="7"
         android:stretchMode="columnWidth"
-        android:verticalSpacing="1dp"></GridView>
+        android:verticalSpacing="1dp"
+        android:layout_margin="2dp">
+    </GridView>
 
     <ListView
         android:id="@+id/mb_day_list"

@@ -72,7 +72,7 @@ public class LoginActivity extends Activity {
             finish();
         } else {
             Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://192.168.56.1:8080/MoneyBookProject/android/")
+                    .baseUrl("http://moneybook25.cafe24.com/MoneyBookProject/android/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
             service = retrofit.create(LoginService.class);

@@ -11,10 +11,12 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mulcam.c901.yk.moneybookandroid.R;
+import com.mulcam.c901.yk.moneybookandroid.calendar.MoneybookAdapter;
 import com.mulcam.c901.yk.moneybookandroid.calendar.MonthAdapter;
 import com.mulcam.c901.yk.moneybookandroid.calendar.MonthItem;
 import com.mulcam.c901.yk.moneybookandroid.model.MoneyBook;
@@ -23,6 +25,7 @@ import com.mulcam.c901.yk.moneybookandroid.service.MoneybookService;
 import com.mulcam.c901.yk.moneybookandroid.setting.MoneybookDBManager;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +64,7 @@ public class MoneyBookActivity extends AppCompatActivity {
     private TextView incomeTv;
     private TextView expenseTv;
     private monthlyAsync ma;
+    private ListView dayLv;
     SharedPreferences mbPrefs;
 
     @Override
@@ -75,6 +79,7 @@ public class MoneyBookActivity extends AppCompatActivity {
         monthView = (GridView) findViewById(R.id.mb_monthView);
         incomeTv = (TextView) findViewById(R.id.mb_income_tv);
         expenseTv = (TextView) findViewById(R.id.mb_expense_tv);
+        dayLv = (ListView) findViewById(R.id.mb_day_list);
 
         Date date = new Date();
         monthViewAdapter = new MonthAdapter(this, dbManager, id_index);
@@ -93,6 +98,8 @@ public class MoneyBookActivity extends AppCompatActivity {
                 int day = curItem.getDay();
 
                 Log.d("MainActivity", "Selected : " + day);
+                ClickDayAsync dayAsync = new ClickDayAsync(dayLv, day, id_index, dbManager);
+                dayAsync.execute();
             }
         });
 
@@ -205,26 +212,36 @@ public class MoneyBookActivity extends AppCompatActivity {
         }
     }
 
-    class ClickDayAsync extends AsyncTask<Void, Void, Void> {
+    class ClickDayAsync extends AsyncTask<Void, Void, List<MoneyBook>> {
         private int selected;
         private int id_index;
         private MoneybookDBManager dbManager;
+        private ListView lv;
+        private MoneybookAdapter adapter;
 
-        public ClickDayAsync(int selected, int id_index, MoneybookDBManager dbManager) {
+        public ClickDayAsync(ListView lv, int selected, int id_index, MoneybookDBManager dbManager) {
+            this.lv = lv;
             this.selected = selected;
             this.id_index = id_index;
             this.dbManager = dbManager;
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
+        protected void onPostExecute(List<MoneyBook> aVoid) {
             super.onPostExecute(aVoid);
+            adapter = new MoneybookAdapter(getApplicationContext(), R.layout.day_list, aVoid);
+            lv.setAdapter(adapter);
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
-//            List<MoneyBook>
-            return null;
+        protected List<MoneyBook> doInBackground(Void... params) {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(curYear, curMonth, selected);
+            Date date = calendar.getTime();
+            List<MoneyBook> dayList = dbManager.selectDayList(id_index, date);
+            Log.d("dayList~~~", dayList.toString());
+
+            return dayList;
         }
     }
 

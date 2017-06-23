@@ -86,7 +86,7 @@ public class MoneybookAdapter extends ArrayAdapter<MoneyBook> {
 //        이미지 박기 보류
 //        holder.categoryImg.setImageDrawable();
         holder.categoryTv.setText(mb.getCategory());
-        holder.priceTv.setText(mb.getPrice());
+        holder.priceTv.setText(String.valueOf(mb.getPrice()));
         holder.detailTv.setText(mb.getDetail());
 /*        int gender = person.getGender();
         if (gender % 2 == 1) {
