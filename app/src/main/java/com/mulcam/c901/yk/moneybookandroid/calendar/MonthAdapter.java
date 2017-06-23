@@ -2,6 +2,7 @@ package com.mulcam.c901.yk.moneybookandroid.calendar;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.text.format.Time;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -11,7 +12,16 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 
+import com.mulcam.c901.yk.moneybookandroid.R;
+import com.mulcam.c901.yk.moneybookandroid.model.MoneyBook;
+import com.mulcam.c901.yk.moneybookandroid.setting.MoneybookDBManager;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * 어댑터 객체 정의
@@ -20,7 +30,6 @@ import java.util.Calendar;
  *
  */
 public class MonthAdapter extends BaseAdapter {
-
 	public static final String TAG = "MonthAdapter";
 	
 	Context mContext;
@@ -31,6 +40,8 @@ public class MonthAdapter extends BaseAdapter {
 	private int selectedPosition = -1;
 	
 	private MonthItem[] items;
+	private MoneybookDBManager dbManager;
+	int id_index;
 	
 	private int countColumn = 7;
 	
@@ -47,23 +58,26 @@ public class MonthAdapter extends BaseAdapter {
 	
 	public MonthAdapter(Context context) {
 		super();
-
 		mContext = context;
-		
 		init();
 	}
 	
 	public MonthAdapter(Context context, AttributeSet attrs) {
 		super();
-
 		mContext = context;
-		
+		init();
+	}
+
+	public MonthAdapter(Context context, MoneybookDBManager dbManager, int id_index) {
+		super();
+		mContext = context;
+		this.dbManager = dbManager;
+		this.id_index = id_index;
 		init();
 	}
 
 	private void init() {
 		items = new MonthItem[7 * 6];
-
 		mCalendar = Calendar.getInstance();
 		recalculate();
 		resetDayNumbers();
@@ -110,16 +124,8 @@ public class MonthAdapter extends BaseAdapter {
 	}
 	
 	public void resetDayNumbers() {
-		for (int i = 0; i < 42; i++) {
-			// calculate day number
-			int dayNumber = (i+1) - firstDay;
-			if (dayNumber < 1 || dayNumber > lastDay) {
-				dayNumber = 0;
-			}
-			
-	        // save as a data item
-	        items[i] = new MonthItem(dayNumber);
-		}
+		dayResetAmountAsync dayAsync = new dayResetAmountAsync(id_index);
+		dayAsync.execute();
 	}
 	
 	private int getFirstDay(int dayOfWeek) {
@@ -172,16 +178,16 @@ public class MonthAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		Log.d(TAG, "getView(" + position + ") called.");
 
-		MonthItemView itemView;
+		MonthItemView1 itemView;
 		if (convertView == null) {
-			itemView = new MonthItemView(mContext);
+			itemView = new MonthItemView1(mContext);
 		} else {
-			itemView = (MonthItemView) convertView;
+			itemView = (MonthItemView1) convertView;
 		}	
 		
 		// create a params
 		GridView.LayoutParams params = new GridView.LayoutParams(
-				GridView.LayoutParams.MATCH_PARENT, 180);
+				GridView.LayoutParams.MATCH_PARENT, 250);
 		
 		// calculate row and column
 		int rowIndex = position / countColumn;
@@ -198,21 +204,20 @@ public class MonthAdapter extends BaseAdapter {
 		itemView.setGravity(Gravity.LEFT);
 		
 		if (columnIndex == 0) {
-			itemView.setTextColor(Color.RED);
+			itemView.getDayTv().setTextColor(Color.RED);
+		} else if (columnIndex == 6) {
+			itemView.getDayTv().setTextColor(Color.BLUE);
 		} else {
-			itemView.setTextColor(Color.BLACK);
+			itemView.getDayTv().setTextColor(Color.BLACK);
 		}
-		
+
 		// set background color
 		if (position == getSelectedPosition()) {
         	itemView.setBackgroundColor(Color.YELLOW);
         } else {
         	itemView.setBackgroundColor(Color.WHITE);
         }
-        
 
-        
-        
 		return itemView;
 	}
 
@@ -288,6 +293,53 @@ public class MonthAdapter extends BaseAdapter {
 	public int getSelectedPosition() {
 		return selectedPosition;
 	}
-	
+
+
+
+	class dayResetAmountAsync extends AsyncTask<Void, Void, Void> {
+		private int idIndex;
+		public dayResetAmountAsync(int idIndex) {
+			this.idIndex = idIndex;
+		}
+
+		@Override
+		protected void onPostExecute(Void aVoid) {
+			super.onPostExecute(aVoid);
+		}
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			HashMap<Integer, int[]> dayAmount = new HashMap<>();
+			for (int i = 0; i < 42; i++) {
+				int[] arr = new int[2];
+				int income = 0;
+				int expense = 0;
+				// calculate day number
+				int dayNumber = (i+1) - firstDay;
+				if (dayNumber < 1 || dayNumber > lastDay) {
+					dayNumber = 0;
+				} else {
+					Calendar cal = Calendar.getInstance();
+					cal.set(curYear, curMonth, dayNumber);
+					Date date = cal.getTime();
+					List<MoneyBook> mbList = dbManager.selectDayList(idIndex, date);
+					for (MoneyBook mb : mbList) {
+						if (mb.getCategory().equals("income")) {
+							income += mb.getPrice();
+						} else {
+							expense += mb.getPrice();
+						}
+					}
+				}
+				arr[0] = income;
+				arr[1] = expense;
+				dayAmount.put(dayNumber, arr);
+
+				// save as a data item
+				items[i] = new MonthItem(dayNumber, dayAmount.get(dayNumber)[0], dayAmount.get(dayNumber)[1]);
+			}
+			return null;
+		}
+	}
 
 }

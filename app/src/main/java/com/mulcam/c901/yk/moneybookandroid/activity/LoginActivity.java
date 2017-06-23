@@ -16,9 +16,14 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.mulcam.c901.yk.moneybookandroid.R;
 import com.mulcam.c901.yk.moneybookandroid.model.MoneyBook;
+import com.mulcam.c901.yk.moneybookandroid.model.MoneyBookTemp;
 import com.mulcam.c901.yk.moneybookandroid.service.LoginService;
 import com.mulcam.c901.yk.moneybookandroid.setting.MoneybookDBManager;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -40,7 +45,6 @@ public class LoginActivity extends Activity {
     private TextView okBtn;
     private TextView cancelBtn;
     private LoginService service;
-    private SharedPreferences prefs;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,18 +56,17 @@ public class LoginActivity extends Activity {
         userPW = (EditText) findViewById(R.id.login_pw_edt);
         okBtn = (TextView) findViewById(R.id.login_ok_btn);
         cancelBtn = (TextView) findViewById(R.id.login_cancle_btn);
-        prefs = getSharedPreferences("loginInfo", MODE_PRIVATE);
 
-        final SharedPreferences prefs = getSharedPreferences("myPrefs", Context.MODE_PRIVATE);
-        String id_index = prefs.getString("id_index", "non_login");
-        Toast.makeText(LoginActivity.this, id_index, Toast.LENGTH_SHORT).show();
-
-//        test하려고 넣어놓은 소스..이따 지우자
+        final SharedPreferences prefs = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
+        int id_index = prefs.getInt("id_index", 0);
         SharedPreferences.Editor editor = prefs.edit();
         editor.remove("id_index");
         editor.commit();
+//        Log.d("LoginActivity의 id_index", String.valueOf(id_indexLong));
+//        int id_index = 1;
 
-        if (!id_index.equals("non_login")) {
+
+        if (id_index != 0) {
             Intent intent = new Intent(LoginActivity.this, MoneyBookActivity.class);
             startActivity(intent);
             finish();
@@ -87,10 +90,13 @@ public class LoginActivity extends Activity {
                             HashMap<String, Object> info = response.body();
                             String resultCode = info.get("result").toString();
                             if (resultCode.equals("2101")) {
+                                SharedPreferences.Editor editor = prefs.edit();
+                                editor.putInt("id_index", Integer.parseInt(info.get("id_index").toString()));
+                                editor.commit();
                                 Toast.makeText(LoginActivity.this, "환영합니다!", Toast.LENGTH_SHORT).show();
+                                dbManager.deleteAll(info.get("id_index").toString());
 
                                 List<MoneyBook> list = (List<MoneyBook>)info.get("moneybookList");
-                                Toast.makeText(LoginActivity.this, list.toString(), Toast.LENGTH_SHORT).show();
                                 for (int i = 0; i < list.size(); i++) {
                                     //Gson 라이브러리를 사용하여 객체를 JSON으로 변환
                                     Gson gson = new Gson();
@@ -98,18 +104,17 @@ public class LoginActivity extends Activity {
                                     Log.d("LoginActivity", objJson);
 
                                     //Gson 라이브러리를 사용하여 객체로부터 만들어진 JSON을 다시 객체로 변환
-                                    MoneyBook objFromJson = gson.fromJson(objJson, MoneyBook.class);
-                                    Log.d("LoginActivity", objFromJson.getCategory());
-                                    Log.d("LoginActivity", String.valueOf(objFromJson.getM_date()));
+                                    MoneyBookTemp objFromJson = gson.fromJson(objJson, MoneyBookTemp.class);
 
-                                    dbManager.insertPerson(objFromJson);
-
+                                    MoneyBook mb = new MoneyBook();
+                                    mb.setMoneyBookNo(objFromJson.getMoneyBookNo());
+                                    mb.setId_index(objFromJson.getId_index());
+                                    mb.setCategory(objFromJson.getCategory());
+                                    mb.setDetail(objFromJson.getDetail());
+                                    mb.setPrice(objFromJson.getPrice());
+                                    mb.setM_date(getDate(objFromJson.getDate(), "yyyy-MM-dd"));
+                                    dbManager.insertMoneybook(mb);
                                 }
-
-                                SharedPreferences.Editor editor = prefs.edit();
-                                editor.putString("id_index", info.get("id_index").toString());
-                                editor.commit();
-
                                 Intent intent = new Intent(LoginActivity.this, MoneyBookActivity.class);
                                 startActivity(intent);
                                 finish();
@@ -136,4 +141,23 @@ public class LoginActivity extends Activity {
         });
 
     }
+
+    public static Date getDate(long milliSeconds, String dateFormat)
+    {
+        // Create a DateFormatter object for displaying date in specified format.
+        SimpleDateFormat formatter = new SimpleDateFormat(dateFormat);
+
+        // Create a calendar object that will convert the date and time value in milliseconds to date.
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliSeconds);
+
+        int mYear = calendar.get(Calendar.YEAR);
+        int mMonth = calendar.get(Calendar.MONTH);
+        int mDay = calendar.get(Calendar.DAY_OF_MONTH);
+
+        Date date = calendar.getTime();
+
+        return date;
+    }
+
 }

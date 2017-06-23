@@ -23,7 +23,8 @@
             <TextView
                 android:id="@+id/mb_income_tv"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="0"/>
         </LinearLayout>
 
         <LinearLayout
@@ -40,7 +41,8 @@
             <TextView
                 android:id="@+id/mb_expense_tv"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="0"/>
         </LinearLayout>
     </LinearLayout>
 

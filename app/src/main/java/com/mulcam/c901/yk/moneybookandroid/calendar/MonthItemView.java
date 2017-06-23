@@ -11,7 +11,6 @@ import android.util.AttributeSet;
  * @author Mike
  */
 public class MonthItemView extends AppCompatTextView {
-
 	private MonthItem item;
 	
 	public MonthItemView(Context context) {
@@ -22,7 +21,6 @@ public class MonthItemView extends AppCompatTextView {
 	
 	public MonthItemView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		 
 		init();
 	}
 

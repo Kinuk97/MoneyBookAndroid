@@ -3,17 +3,25 @@ package com.mulcam.c901.yk.moneybookandroid.setting;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
+import com.mulcam.c901.yk.moneybookandroid.calendar.MonthItem;
 import com.mulcam.c901.yk.moneybookandroid.model.MoneyBook;
 import com.mulcam.c901.yk.moneybookandroid.service.MoneybookService;
 
+import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by student on 2017-06-21.
@@ -34,7 +42,7 @@ public class MoneybookDBManager {
                     + "category text, "
                     + "detail text, "
                     + "price integer, "
-                    + "m_date integer)");
+                    + "m_date text)");
         }
 
         @Override
@@ -54,23 +62,90 @@ public class MoneybookDBManager {
         openHelper = new MoneybookDBOpenHelper(context, DB_VERSION);
     }
 
-    public void insertPerson(MoneyBook mb) {
+    public void insertMoneybook(MoneyBook mb) {
         ContentValues cv = new ContentValues();
         cv.put("moneyBookNo", mb.getMoneyBookNo());
         cv.put("id_index", mb.getId_index());
         cv.put("category", mb.getCategory());
         cv.put("detail", mb.getDetail());
         cv.put("price", mb.getPrice());
-        cv.put("m_date", mb.getM_date());
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String dateStr = format.format(mb.getM_date());
+        cv.put("m_date", dateStr);
         openHelper.getWritableDatabase().insert("moneybook", null, cv);
     }
 
-    public void deletePerson(int moneyBookNo) {
+    public void updateMoneybook(MoneyBook mb) {
+        ContentValues cv = new ContentValues();
+        cv.put("moneyBookNo", mb.getMoneyBookNo());
+        cv.put("id_index", mb.getId_index());
+        cv.put("category", mb.getCategory());
+        cv.put("detail", mb.getDetail());
+        cv.put("price", mb.getPrice());
+        cv.put("m_date", mb.getM_date().toString());
+
+        openHelper.getWritableDatabase().update("moneybook", cv, "moneyBookNo=?", new String[]{mb.getMoneyBookNo() + ""});
+    }
+
+    public void deleteMoneybook(int moneyBookNo) {
         openHelper.getWritableDatabase().delete("moneybook", "moneyBookNo = ?", new String[]{moneyBookNo + ""});
     }
 
-    public MoneyBook selectOne(int id_index) {
-        Cursor cursor = openHelper.getReadableDatabase().rawQuery("select * from person where id_index=?", new String[]{id_index + ""});
+    public void deleteAll(String id_index) {
+        openHelper.getWritableDatabase().delete("moneybook", "id_index = ?", new String[]{id_index});
+    }
+
+    public List<MoneyBook> selectMoneyBookList(int id_index) {
+        Cursor cursor = openHelper.getReadableDatabase().rawQuery("select * from moneybook where id_index = ?", new String[]{id_index + ""});
+        List<MoneyBook> list = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            MoneyBook mb = new MoneyBook();
+            mb.setMoneyBookNo(cursor.getInt(0));
+            mb.setId_index(cursor.getInt(1));
+            mb.setCategory(cursor.getString(2));
+            mb.setDetail(cursor.getString(3));
+            mb.setPrice(cursor.getInt(4));
+            String mdateStr = cursor.getString(5);
+            try {
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                Date date = format.parse(mdateStr);
+                mb.setM_date(date);
+            } catch (ParseException e) {
+                mb.setM_date(null);
+                Log.e("LoginActivity", "데이트 포맷이 맞지 않습니다(selectAll)");
+            }
+            list.add(mb);
+        }
+        return list;
+    }
+
+    public List<MoneyBook> selectDayList(int id_index, Date curDate) {
+        DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+        String date = format.format(curDate);
+        Cursor cursor = openHelper.getReadableDatabase().rawQuery("select * from moneybook where id_index = ? and m_date = ?", new String[]{id_index + "", date+""});
+        List<MoneyBook> list = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            MoneyBook mb = new MoneyBook();
+            mb.setMoneyBookNo(cursor.getInt(0));
+            mb.setId_index(cursor.getInt(1));
+            mb.setCategory(cursor.getString(2));
+            mb.setDetail(cursor.getString(3));
+            mb.setPrice(cursor.getInt(4));
+            String mdateStr = cursor.getString(5);
+            try {
+                Date m_date = format.parse(mdateStr);
+                mb.setM_date(m_date);
+            } catch (ParseException e) {
+                mb.setM_date(null);
+                Log.e("LoginActivity", "데이트 포맷이 맞지 않습니다(selectAll)");
+            }
+            list.add(mb);
+        }
+        return list;
+    }
+
+    public MoneyBook selectOne(int moneybookNo) {
+        Cursor cursor = openHelper.getReadableDatabase().rawQuery("select * from moneybook where moneyBookNo = ?", new String[]{moneybookNo + ""});
         MoneyBook mb = null;
         cursor.moveToFirst();
         if (cursor.moveToNext()) {
@@ -80,7 +155,15 @@ public class MoneybookDBManager {
             mb.setCategory(cursor.getString(2));
             mb.setDetail(cursor.getString(3));
             mb.setPrice(cursor.getInt(4));
-            mb.setM_date(cursor.getInt(5));
+            String mdateStr = cursor.getString(5);
+            try {
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                Date date = format.parse(mdateStr);
+                mb.setM_date(date);
+            } catch (ParseException e) {
+                mb.setM_date(null);
+                Log.e("LoginActivity", "데이트 포맷이 맞지 않습니다(selectAll)");
+            }
         }
         return mb;
     }
@@ -99,7 +182,42 @@ public class MoneybookDBManager {
             mb.setCategory(cursor.getString(2));
             mb.setDetail(cursor.getString(3));
             mb.setPrice(cursor.getInt(4));
-            mb.setM_date(cursor.getInt(5));
+            String mdateStr = cursor.getString(5);
+            try {
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                Date date = format.parse(mdateStr);
+                mb.setM_date(date);
+            } catch (ParseException e) {
+                mb.setM_date(null);
+                Log.e("LoginActivity", "데이트 포맷이 맞지 않습니다(selectAll)");
+            }
+        }
+        return list;
+    }
+
+    public List<MoneyBook> selectOneMonth() {
+        Cursor cursor = openHelper.getReadableDatabase().query("moneybook", new String[]{"moneyBookNo", "id_index", "category", "detail", "price", "m_date"}
+                , null, null, null, null, null, null);
+        //테이블명을 조회할 컬럼명 리스트, 조건절, 조건절에 들어갈 값들
+        //헤빙절, 그룹바이절, 오더바이절, 리미트
+
+        List<MoneyBook> list = new ArrayList<>();
+        while (cursor.moveToNext()) {
+            MoneyBook mb = new MoneyBook();
+            mb.setMoneyBookNo(cursor.getInt(0));
+            mb.setId_index(cursor.getInt(1));
+            mb.setCategory(cursor.getString(2));
+            mb.setDetail(cursor.getString(3));
+            mb.setPrice(cursor.getInt(4));
+            String mdateStr = cursor.getString(5);
+            try {
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+                Date date = format.parse(mdateStr);
+                mb.setM_date(date);
+            } catch (ParseException e) {
+                mb.setM_date(null);
+                Log.e("LoginActivity", "데이트 포맷이 맞지 않습니다(selectAll)");
+            }
         }
         return list;
     }

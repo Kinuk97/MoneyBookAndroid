@@ -1,5 +1,9 @@
 package com.mulcam.c901.yk.moneybookandroid.activity;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -13,9 +17,15 @@ import android.widget.Toast;
 import com.mulcam.c901.yk.moneybookandroid.R;
 import com.mulcam.c901.yk.moneybookandroid.calendar.MonthAdapter;
 import com.mulcam.c901.yk.moneybookandroid.calendar.MonthItem;
+import com.mulcam.c901.yk.moneybookandroid.model.MoneyBook;
+import com.mulcam.c901.yk.moneybookandroid.service.MoneybookCalculator;
 import com.mulcam.c901.yk.moneybookandroid.service.MoneybookService;
+import com.mulcam.c901.yk.moneybookandroid.setting.MoneybookDBManager;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,7 +39,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * @author Mike
  */
 public class MoneyBookActivity extends AppCompatActivity {
-    private MoneybookService moneybookService;
+    private MoneybookDBManager dbManager;
     private GridView monthView;
     private MonthAdapter monthViewAdapter;
 
@@ -47,42 +57,32 @@ public class MoneyBookActivity extends AppCompatActivity {
      * 현재 월
      */
     private int curMonth;
+    private int id_index;
     private TextView incomeTv;
     private TextView expenseTv;
+    private monthlyAsync ma;
+    SharedPreferences mbPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.moneybook);
+        dbManager = new MoneybookDBManager(this);
+        mbPrefs = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
+        id_index = mbPrefs.getInt("id_index", 0);
 
         // 월별 캘린더 뷰 객체 참조
         monthView = (GridView) findViewById(R.id.mb_monthView);
         incomeTv = (TextView) findViewById(R.id.mb_income_tv);
         expenseTv = (TextView) findViewById(R.id.mb_expense_tv);
-        monthViewAdapter = new MonthAdapter(this);
+
+        Date date = new Date();
+        monthViewAdapter = new MonthAdapter(this, dbManager, id_index);
         monthView.setAdapter(monthViewAdapter);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://192.168.56.1:8080/MoneyBookProject/android/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        moneybookService = retrofit.create(MoneybookService.class);
-
-        Call<HashMap<String, Object>> call = moneybookService.moneybookList(1);
-        call.enqueue(new Callback<HashMap<String, Object>>() {
-            @Override
-            public void onResponse(Call<HashMap<String, Object>> call, Response<HashMap<String, Object>> response) {
-                HashMap<String, Object> moneybookList = response.body();
-                incomeTv.setText(moneybookList.get("monthIncome").toString());
-                expenseTv.setText(moneybookList.get("monthExpense").toString());
-
-            }
-
-            @Override
-            public void onFailure(Call<HashMap<String, Object>> call, Throwable t) {
-                Toast.makeText(MoneyBookActivity.this, "리스트를 받아오는 데 실패했습니다", Toast.LENGTH_SHORT).show();
-            }
-        });
+        List<MoneyBook> list = dbManager.selectMoneyBookList(id_index);
+        ma = new monthlyAsync(list, incomeTv, expenseTv, dbManager);
+        ma.execute();
 
         // 리스너 설정
         monthView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -108,6 +108,10 @@ public class MoneyBookActivity extends AppCompatActivity {
                 monthViewAdapter.notifyDataSetChanged();
 
                 setMonthText();
+
+                List<MoneyBook> list = dbManager.selectMoneyBookList(id_index);
+                ma = new monthlyAsync(list, incomeTv, expenseTv, dbManager);
+                ma.execute();
             }
         });
 
@@ -119,6 +123,10 @@ public class MoneyBookActivity extends AppCompatActivity {
                 monthViewAdapter.notifyDataSetChanged();
 
                 setMonthText();
+
+                List<MoneyBook> list = dbManager.selectMoneyBookList(id_index);
+                ma = new monthlyAsync(list, incomeTv, expenseTv, dbManager);
+                ma.execute();
             }
         });
 
@@ -132,6 +140,69 @@ public class MoneyBookActivity extends AppCompatActivity {
         curMonth = monthViewAdapter.getCurMonth();
 
         monthText.setText(curYear + "년 " + (curMonth + 1) + "월");
+    }
+
+    //    한달 수입, 하루치 계산해서 넣기
+    class monthlyAsync extends AsyncTask<Void, Void, HashMap<String, Object>> {
+        private MoneybookDBManager dbManager;
+        private List<MoneyBook> mbList;
+        private TextView incomeTv;
+        private TextView expenseTv;
+        private ProgressDialog dialog;
+
+        public monthlyAsync(List<MoneyBook> mbList, TextView incomeTv, TextView expenseTv, MoneybookDBManager dbManager) {
+            this.mbList = mbList;
+            this.incomeTv = incomeTv;
+            this.expenseTv = expenseTv;
+            this.dbManager = dbManager;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            dialog = new ProgressDialog(MoneyBookActivity.this);
+            dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            dialog.setCancelable(false);
+            dialog.setTitle("월별 보기");
+            dialog.setMessage("데이터를 가져오는 중입니다.");
+            dialog.show();
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            dialog.setProgressStyle(1);
+        }
+
+        @Override
+        protected void onPostExecute(HashMap<String, Object> aVoid) {
+            super.onPostExecute(aVoid);
+            incomeTv.setText(aVoid.get("income").toString());
+            expenseTv.setText(aVoid.get("expense").toString());
+            dialog.dismiss();
+        }
+
+        @Override
+        protected HashMap<String, Object> doInBackground(Void... params) {
+            HashMap<String, Object> monthlyMb = new HashMap<>();
+            int income = 0;
+            int expense = 0;
+            for (MoneyBook mb : mbList) {
+                publishProgress();
+                Date date = mb.getM_date();
+                if (date.getMonth() == curMonth) {
+                    if (mb.getCategory().equals("income"))
+                        income += mb.getPrice();
+                    else
+                        expense += mb.getPrice();
+
+                }
+            }
+            monthlyMb.put("income", income);
+            monthlyMb.put("expense", expense);
+
+            return monthlyMb;
+        }
     }
 
 }

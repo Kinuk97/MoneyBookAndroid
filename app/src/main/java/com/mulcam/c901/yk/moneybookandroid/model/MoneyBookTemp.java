@@ -2,13 +2,13 @@ package com.mulcam.c901.yk.moneybookandroid.model;
 
 import java.util.Date;
 
-public class MoneyBook {
+public class MoneyBookTemp {
 	private int moneyBookNo;
 	private int id_index;
 	private String category;
 	private String detail;
 	private int price;
-	private Date m_date;
+	private long date;
 	
 	public int getMoneyBookNo() {
 		return moneyBookNo;
@@ -50,18 +50,18 @@ public class MoneyBook {
 		this.price = price;
 	}
 
-	public Date getM_date() {
-		return m_date;
+	public long getDate() {
+		return date;
 	}
 
-	public void setM_date(Date m_date) {
-		this.m_date = m_date;
+	public void setDate(long date) {
+		this.date = date;
 	}
 
 	@Override
 	public String toString() {
 		return "[moneyBookNo=" + moneyBookNo + ", id_index=" + id_index + ", category=" + category
-				+ ", detail=" + detail + ", price=" + price + ", date=" + m_date + "]";
+				+ ", detail=" + detail + ", price=" + price + ", date=" + date + "]";
 	}
 	
 

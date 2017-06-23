@@ -5,4 +5,6 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="moneyBookColor">#1ABC9C</color>
+    <color name="incomeColor">#91D4B5</color>
+    <color name="expenseColor">#FA8072</color>
 </resources>

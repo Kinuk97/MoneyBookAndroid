@@ -9,6 +9,8 @@ package com.mulcam.c901.yk.moneybookandroid.calendar;
 public class MonthItem {
 
 	private int dayValue;
+	private int income;
+	private int expense;
 
 	public MonthItem() {
 		
@@ -16,6 +18,12 @@ public class MonthItem {
 	
 	public MonthItem(int day) {
 		dayValue = day;
+	}
+
+	public MonthItem(int day, int income, int expense) {
+		dayValue = day;
+		this.income = income;
+		this.expense = expense;
 	}
 	
 	public int getDay() {
@@ -25,7 +33,20 @@ public class MonthItem {
 	public void setDay(int day) {
 		this.dayValue = day;
 	}
-	
-	
-	
+
+	public int getIncome() {
+		return income;
+	}
+
+	public void setIncome(int income) {
+		this.income = income;
+	}
+
+	public int getExpense() {
+		return expense;
+	}
+
+	public void setExpense(int expense) {
+		this.expense = expense;
+	}
 }
