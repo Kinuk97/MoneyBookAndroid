@@ -59,9 +59,9 @@ public class LoginActivity extends Activity {
 
         final SharedPreferences prefs = getSharedPreferences("LoginInfo", Context.MODE_PRIVATE);
         int id_index = prefs.getInt("id_index", 0);
-        SharedPreferences.Editor editor = prefs.edit();
+/*        SharedPreferences.Editor editor = prefs.edit();
         editor.remove("id_index");
-        editor.commit();
+        editor.commit();*/
 //        Log.d("LoginActivity의 id_index", String.valueOf(id_indexLong));
 //        int id_index = 1;
 
@@ -90,11 +90,11 @@ public class LoginActivity extends Activity {
                             HashMap<String, Object> info = response.body();
                             String resultCode = info.get("result").toString();
                             if (resultCode.equals("2101")) {
+                                dbManager.deleteAll(info.get("id_index").toString());
                                 SharedPreferences.Editor editor = prefs.edit();
                                 editor.putInt("id_index", Integer.parseInt(info.get("id_index").toString()));
                                 editor.commit();
                                 Toast.makeText(LoginActivity.this, "환영합니다!", Toast.LENGTH_SHORT).show();
-                                dbManager.deleteAll(info.get("id_index").toString());
 
                                 List<MoneyBook> list = (List<MoneyBook>)info.get("moneybookList");
                                 for (int i = 0; i < list.size(); i++) {

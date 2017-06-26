@@ -82,8 +82,7 @@ public class MoneybookAdapter extends ArrayAdapter<MoneyBook> {
         holder.categoryTv.setText(categoryStr);
         holder.priceTv.setText(String.valueOf(mb.getPrice()));
         holder.detailTv.setText(mb.getDetail());
-        String id = "R.drawable." + categoryStr;
-        Log.d("drawable ID", id);
+        String id = categoryStr;
         int resID = context.getResources().getIdentifier(id, "drawable", context.getPackageName());
         Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resID);
         holder.categoryImg.setImageBitmap(bitmap);

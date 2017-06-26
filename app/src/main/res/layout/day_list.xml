@@ -8,8 +8,8 @@
         android:layout_height="wrap_content">
         <ImageView
             android:id="@+id/day_list_category_image"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:src="@drawable/left_arrow"
             android:layout_alignParentLeft="true"/>
         <TextView
